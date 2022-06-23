@@ -1,0 +1,5 @@
+rootProject.name = 'gilog'
+include 'gilog-api-server'
+include 'gilog-batch-server'
+include 'gilog-core'
+
