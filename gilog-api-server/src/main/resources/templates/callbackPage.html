@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>완료</title>
+
+</head>
+<body>
+<!--  <button th:onclick="callbackKey( [[${key}]] )"}>확인</button>-->
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        /*<![CDATA[*/
+        var key = "[[${key}]]";
+         /*]]>*/
+        console.log(key);
+        JavaScriptChannel.postMessage(key);
+    });
+
+</script>
+</html>
