@@ -1,11 +1,13 @@
 package com.gilog.controller;
 
 import com.gilog.service.UserService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class UserController {
 
     private final UserService userService;
@@ -14,6 +16,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    
     @GetMapping("/api/admin")
     public String adminTest(@RequestParam String code){
 
@@ -22,12 +25,13 @@ public class UserController {
 
 
     @GetMapping("/api/oauth2/code/kakao")
-    public String kakaoCallback(@RequestParam String code){
+    public String kakaoCallback(@RequestParam String code, Model model){
         System.out.println(code);
 
         String accessToken = userService.getAccessToken(code);
-
-        return userService.createKakaoUser(accessToken);
+        String key = userService.createKakaoUser(accessToken);
+        model.addAttribute("key", key);
+        return "callbackPage";
 
 
         //return accessToken;

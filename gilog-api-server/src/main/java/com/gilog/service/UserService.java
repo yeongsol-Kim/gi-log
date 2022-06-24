@@ -63,7 +63,9 @@ public class UserService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=ee4ee61f1ea69f5a8d5f5924343083f7"); //본인이 발급받은 key
-            sb.append("&redirect_uri=http://localhost:8080/api/oauth2/code/kakao"); // 본인이 설정한 주소
+//            sb.append("&client_id=a5566d5455e615f046de006fd9973957"); //본인이 발급받은 admin key
+//            sb.append("&redirect_uri=http://localhost:8080/api/oauth2/code/kakao"); // 본인이 설정한 주소
+            sb.append("&redirect_uri=http://ec2-3-39-195-205.ap-northeast-2.compute.amazonaws.com:8080/api/oauth2/code/kakao"); // 본인이 설정한 주소
             sb.append("&code=" + authorize_code);
             bw.write(sb.toString());
             bw.flush();
