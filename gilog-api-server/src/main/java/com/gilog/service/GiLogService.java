@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -20,13 +21,13 @@ public class GiLogService {
     }
 
     // 기록 데이터 저장
-    public void saveGiLog(GiLogDto giLogDto) {
+    public Long saveGiLog(GiLogDto giLogDto) {
         GiLog giLog = GiLog.builder()
                 .question(giLogDto.getQuestion())
                 .request(giLogDto.getRequest())
                 .userId(giLogDto.getUserId())
                 .writeDate(giLogDto.getWriteDate()).build();
-        giLogRepository.save(giLog);
+        return giLogRepository.save(giLog).getId();
     }
 
     public GiLogDto getMyGiLogByDate(Long userId, LocalDate date) {
@@ -36,6 +37,14 @@ public class GiLogService {
                 .question(giLog.getQuestion())
                 .request(giLog.getRequest())
                 .build();
+    }
+
+    public void setGiLogImagePath(Long id, String saveImageName) {
+        GiLog gilog = giLogRepository.findById(id).orElse(null);
+        if (gilog != null) {
+            gilog.setImage(saveImageName);
+            giLogRepository.save(gilog);
+        }
     }
 
 }

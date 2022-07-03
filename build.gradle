@@ -34,9 +34,9 @@ subprojects {
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 		implementation 'org.springframework.boot:spring-boot-starter-security'
+		implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
 		compileOnly 'org.projectlombok:lombok'
-
 		annotationProcessor 'org.projectlombok:lombok'
 		annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
@@ -61,6 +61,8 @@ project(':gilog-core') {
 	jar { enabled = true }
 
 	dependencies {
+
+
 	}
 }
 
@@ -69,7 +71,7 @@ project(':gilog-api-server') {
 	jar { enabled = false }
 
 	dependencies {
-		implementation project(':gilog-core') // 컴파일 시 velog-core project 로딩
+		implementation project(':gilog-core')
 	}
 }
 
@@ -78,6 +80,7 @@ project(':gilog-batch-server') {
 	jar { enabled = false }
 
 	dependencies {
-		implementation project(':gilog-core') // 컴파일 시 velog-core project 로딩
+
+		implementation project(':gilog-core')
 	}
 }

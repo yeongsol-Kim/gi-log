@@ -1,2 +1,120 @@
-{
+        body {
+    background-color: aliceblue;
+}
+.contents {
+    width: 100%;
+}
+.title {
+    display: inline-block;
+}
+.subtitle {
+    font-size: 0.8rem;
+    color: gray;
+    display: inline-block;
+}
+.card-stretch {
+    background-color: white;
+    height: 10rem;
+    border-radius: 1px;
+    margin: 1rem;
+    box-shadow: 0px 2px 2px lightgray;
+    display: flex;
+}
+.card-stretch-item-3 {
+    flex-basis: 33%;
+    display:flex;
+    flex-direction: row;
+}
+.card-stretch-item-5 {
+    flex-basis: 20%;
+    display:flex;
+    flex-direction: row;
+}
+.cards {
+    display:flex;
+
+}
+.card-4 {
+    width:25%;
+    box-shadow: 0px 2px 2px lightgray;
+    margin: 1rem;
+    background-color: white;
+    height: 10rem;
+}
+.icon-circle {
+    color:white;
+    background-color: lightgray;
+    border-radius: 10rem;
+    display: table;
+    width: 5rem;
+    height: 5rem;
+    text-align: center;
+}
+.icon-item {
+    display:table-cell!important;
+    vertical-align: middle;
+    margin: 0.4rem;
+}
+.ver-center {
+    display: table-cell;
+    vertical-align: middle;
+}
+.section {
+    padding: 1rem;
+}
+.contents {
+    padding: 1rem;
+}
+.option {
+  border: 1px solid lightgrey;
+  border-collapse: collapse;
+  width: 100%;
+}
+.option td {
+  padding: 0.5rem;
+  border: 1px solid lightgrey;
+}
+.option th {
+padding: 0.5rem;
+  border: 1px solid lightgrey;
+  background-color: whitesmoke;
+}
+.box {
+  background-color: white;
+  box-shadow: 0px 2px 2px lightgray;
+  margin-top: 2rem;
+}
+.sidebar {
+    width: 15rem;
+    display: flex;
+    flex-direction: column;
+    background-color: slategrey;
+    list-style:none;
+    padding-left: 0px;
+    height: 100%;
+}
+.sidebar-title {
+    text-align: center;
+    font-size: 2rem;
+    color: white;
+    padding: 1rem;
+    background-color: #405060;
+}
+.sidebar a {
+    text-decoration-line: none;
+}
+.link-item {
+    color : lightgray !important;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    padding-left: 1rem;
+}
+.icon {
+    margin-right: 0.3rem;
+}
+.h-8 {
+    height: 8rem;
+}
+.card-info {
+    padding-left: 0.4rem;
 }

@@ -20,7 +20,7 @@ import java.util.Date;
 public class JwtProvider {
     @Value("${spring.jwt.secret-key}")
     private String SECRET_KEY;
-    private static final Long TOKEN_VALID_TIME = 1000L * 60 * 3; // 3m
+    private static final Long TOKEN_VALID_TIME = 1000L * 60 * 30; // 30m
     private final CustomAccountDetailsService customAccountDetailService;
 
     // 의존성 주입 후, 초기화를 수행

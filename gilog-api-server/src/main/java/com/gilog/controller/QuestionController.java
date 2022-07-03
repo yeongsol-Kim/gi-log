@@ -18,4 +18,5 @@ public class QuestionController {
     public QuestionDto dailyQuestion() {
         return questionService.getRandomQuestion();
     }
+
 }

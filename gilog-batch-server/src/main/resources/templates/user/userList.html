@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>고객관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link href="css/gilog-css.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+
+    <script src="https://kit.fontawesome.com/7587aaf826.js" crossorigin="anonymous"></script>
+    <style>
+  </style>
+</head>
+<body>
+<div class="d-flex" style="flex-direction: row">
+    <div th:replace="/fragments/sidebar.html :: sidebar"></div>
+    <div class="contents">
+        <h2>고객관리</h2>
+        <div class="section box">
+            <table class="option">
+                <tr>
+                    <th>검색어</th>
+                    <td>
+                        <select id="search-type">
+                            <option value="username">아이디</option>
+                        </select>
+                        <input type="text" id="search-value" maxlength="20">
+                    </td>
+                </tr>
+            </table>
+            <div class="text-center mt-4">
+                <button id="search" class="btn btn-primary">검색</button>
+                <button id="reset" class="btn btn-secondary">초기화</button>
+            </div>
+        </div>
+
+        <div class="section box">
+            회원목록
+            <table id="usertable">
+                <thead>
+                <tr>
+                    <th>아이디</th>
+                    <th>이름</th>
+                    <th>나이</th>
+                    <th>성별</th>
+                    <th>가입일</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+  $(document).ready( function () {
+    $('#usertable').DataTable();
+    searchUserList();
+
+    $('#reset').on('click', function(){
+      $('#search-value').val('');
+      searchList();
+    })
+
+    $('#search').on('click', function(){
+        searchUserList();
+    })
+
+    function searchUserList() {
+      $("#usertable").DataTable({
+        destroy:true,
+        searching:false,
+        bLengthChange: false,
+        pageLength: 20,
+        ajax:{
+          url:"./users",
+          type :"GET",
+          data: {
+            searchKey: $('#search-type').val(),
+            searchValue: $('#search-value').val()
+          },
+          dataSrc : ''
+        },
+        columns:[
+          //{data:"ids", defaultContent: ""},
+          {data:"username"},
+          {data:"nickname"},
+          {data:"age"},
+          {data:"gender"},
+          {data:"regDatetime"}
+        ]
+
+      });
+    }
+  });
+</script>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
+</body>
+</html>

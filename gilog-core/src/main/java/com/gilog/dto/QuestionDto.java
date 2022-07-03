@@ -9,5 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 public class QuestionDto {
 
+    private Long id;
+
     private String question;
 }

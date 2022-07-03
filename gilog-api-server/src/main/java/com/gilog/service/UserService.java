@@ -1,11 +1,13 @@
 package com.gilog.service;
 
+import com.gilog.dto.UserDto;
 import com.gilog.entity.User;
 import com.gilog.exception.BadRequestException;
 import com.gilog.jwt.JwtProvider;
-import com.gilog.repository.UserRepository;
+import com.gilog.repository.UserRepositoryInt;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,19 +20,23 @@ import java.net.URL;
 @Transactional
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepositoryInt userRepositoryInt;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
-        this.userRepository = userRepository;
+    @Value("${kakao.redirect-url}")
+    private String kakaoRedirectUrl;
+
+
+    public UserService(UserRepositoryInt userRepositoryInt, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+        this.userRepositoryInt = userRepositoryInt;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
     }
 
 
     public String login(String email, String password) {
-        User account = userRepository
+        User account = userRepositoryInt
                 .findByUsername(email).orElseThrow(() -> new BadRequestException("아이디 혹은 비밀번호를 확인하세요."));
         checkPassword(password, account.getPassword());
         return jwtProvider.createToken(account.getUsername(), account.getRole());
@@ -64,8 +70,7 @@ public class UserService {
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=ee4ee61f1ea69f5a8d5f5924343083f7"); //본인이 발급받은 key
 //            sb.append("&client_id=a5566d5455e615f046de006fd9973957"); //본인이 발급받은 admin key
-//            sb.append("&redirect_uri=http://localhost:8080/api/oauth2/code/kakao"); // 본인이 설정한 주소
-            sb.append("&redirect_uri=http://ec2-3-39-195-205.ap-northeast-2.compute.amazonaws.com:8080/api/oauth2/code/kakao"); // 본인이 설정한 주소
+            sb.append("&redirect_uri=" + kakaoRedirectUrl); // 본인이 설정한 주소
             sb.append("&code=" + authorize_code);
             bw.write(sb.toString());
             bw.flush();
@@ -145,7 +150,7 @@ public class UserService {
             System.out.println("email : " + email);
 
 
-            User isUser = userRepository.findByUsername(email).orElse(null);
+            User isUser = userRepositoryInt.findByUsername(email).orElse(null);
 
             // 카카오 정보로 회원가입
             if (isUser == null) {
@@ -159,7 +164,7 @@ public class UserService {
                         .password(Integer.toString(id))
                         .role("[ROLE_USER]")
                         .build();
-                userRepository.save(user);
+                userRepositoryInt.save(user);
             }
 
 //            // 로그인 처리
@@ -183,8 +188,33 @@ public class UserService {
 
 
     public Long getIdByUsername(String username) {
-        return userRepository.findByUsername(username).orElse(null).getId();
+        return userRepositoryInt.findByUsername(username).orElse(null).getId();
     }
 
+    // 로그인 유저 정보
+    public UserDto getMyInfo(String username) {
+        User user = userRepositoryInt.findByUsername(username).orElse(null);
+
+        return UserDto.builder()
+                .gender(user.getGender())
+                .age(user.getAge())
+                .regDatetime(user.getRegDatetime())
+                .nickname(user.getNickname())
+                .username(user.getUsername())
+                .build();
+    }
+
+    // 유저 정보 등록/수정
+    public Long setUserInfo(UserDto userDto) {
+        User user = userRepositoryInt.findByUsername(userDto.getUsername()).orElse(null);
+        user.setAge(userDto.getAge());
+        user.setGender(userDto.getGender());
+        user.setNickname(userDto.getNickname());
+        if (user == null) {
+            return 0L;
+        }
+
+        return userRepositoryInt.save(user).getId();
+    }
 
 }

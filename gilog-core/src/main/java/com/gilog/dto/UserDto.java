@@ -19,5 +19,9 @@ public class UserDto {
 
     private String nickname;
 
+    private String gender;
+
+    private Integer age;
+
     private LocalDateTime regDatetime;
 }

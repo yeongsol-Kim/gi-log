@@ -16,8 +16,11 @@ public class QuestionService {
         this.questionRepository = questionRepository;
     }
 
+    // 랜덤 질문
     public QuestionDto getRandomQuestion() {
         Question randomQuestion = questionRepository.getRandomQuestion();
         return QuestionDto.builder().question(randomQuestion.getQuestion()).build();
     }
+
+
 }

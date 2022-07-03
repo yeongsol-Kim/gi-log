@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>배송 관리</title>
+
+    <th:block th:replace="/fragments/head.html :: head"> </th:block>
+
+    <style>
+    </style>
+</head>
+<body>
+<div class="d-flex" style="flex-direction: row">
+    <div th:replace="/fragments/sidebar.html :: sidebar" style="min-height:1080px;"></div>
+    <div class="contents">
+        <h2>배송 관리</h2>
+
+        <div class="card-stretch h-8">
+            <div class="card-stretch-item-5 p-4">
+                <div class="icon-circle">
+                    <i class="fa-solid fa-coins fa-2x icon-item"></i>
+                </div>
+                <div class="card-info">
+                    <div><b>입금전</b></div>
+                    <h2 class="title">0</h2>
+                </div>
+            </div>
+            <div class="card-stretch-item-5 p-4">
+                <div class="icon-circle">
+                    <i class="fa-solid fa-box fa-2x icon-item"></i>
+                </div>
+                <div class="card-info">
+                    <div><b>배송준비중</b></div>
+                    <h2 class="title">0</h2>
+                </div>
+            </div>
+            <div class="card-stretch-item-5 p-4">
+                <div class="icon-circle">
+                    <i class="fa-solid fa-truck fa-2x icon-item"></i>
+                </div>
+                <div class="card-info">
+                    <div><b>배송대기</b></div>
+                    <h2 class="title">0</h2>
+                </div>
+            </div>
+            <div class="card-stretch-item-5 p-4">
+                <div class="icon-circle">
+                    <i class="fa-solid fa-truck-fast fa-2x icon-item"></i>
+                </div>
+                <div class="card-info">
+                    <div><b>배송중</b></div>
+                    <h2 class="title">0</h2>
+                </div>
+            </div>
+            <div class="card-stretch-item-5 p-4">
+                <div class="icon-circle">
+                    <i class="fa-solid fa-box-open fa-2x icon-item"></i>
+                </div>
+                <div class="card-info">
+                    <div><b>배송완료</b></div>
+                    <h2 class="title">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="section box">
+            <table class="option">
+                <tr>
+                    <th>검색어</th>
+                    <td>
+                        <select id="search-type">
+                            <option value="id">주문번호</option>
+                            <option value="nickname">고객명</option>
+                            <option value="">id</option>
+                            <option value="waybillNumber">운송장번호</option>
+                        </select>
+                        <input type="text" id="search-value" maxlength="20">
+                    </td>
+                </tr>
+                <tr>
+                    <th>기간</th>
+                    <td>
+                        <input id="after-date" type="date"> ~ <input id="before-date" type="date">
+                    </td>
+                </tr>
+                <tr>
+                    <th>상품</th>
+                    <td>
+                        <input type="radio" id="product-none" name="product" checked>
+                        <label for="product-none">전체</label>
+                        <input type="radio" id="product-14" name="product" value="14">
+                        <label for="product-14">14장</label>
+                        <input type="radio" id="product-28" name="product" value="28">
+                        <label for="product-28">28장</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>입금상태</th>
+                    <td>
+                        <input type="radio" id="pay-none" name="pay" value="0" checked>
+                        <label for="pay-none">전체</label>
+                        <input type="radio" id="pay-before" name="pay" value="1">
+                        <label for="pay-before">입금전</label>
+                        <input type="radio" id="pay-payed" name="pay" value="2">
+                        <label for="pay-payed">입금완료</label>
+                    </td>
+                </tr>
+            </table>
+            <div class="text-center mt-4">
+                <button id="search" class="btn btn-primary">검색</button>
+                <button id="reset" class="btn btn-secondary">초기화</button>
+            </div>
+        </div>
+
+        <div class="section box">
+            <table id="ordertable">
+                <thead>
+                <tr>
+                    <th>주문번호</th>
+                    <th>주문회원</th>
+                    <th>상품명</th>
+                    <th>운송장번호</th>
+                    <th>주문상태</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <script>
+  $(document).ready( function () {
+    $('#ordertable').DataTable();
+    searchList();
+
+    $('#reset').on('click', function(){
+        $('#search-value').val('');
+        $('#product-none').prop('checked', true);
+        $('#before-date').val('');
+        $('#after-date').val('');
+        $('#pay-none').prop('checked', true);
+      searchList();
+    })
+
+    $('#search').on('click', function(){
+      searchList();
+    })
+
+    function searchList() {
+      $("#ordertable").DataTable({
+        destroy:true,
+        searching:false,
+        pageLength: 10,
+        ajax:{
+          url:"./orders",
+          type :"GET",
+          data: {
+            searchKey: $('#search-type').val(),
+            searchValue: $('#search-value').val(),
+            product: $('input[name="product"]:checked').val(),
+            beforeDateString: $('#before-date').val(),
+            afterDateString: $('#after-date').val(),
+            payState: $('input[name="pay"]:checked').val()
+          },
+          dataSrc: function(data) {
+            data.forEach((e, i) => {
+                if (e.payState == 1) data[i].payState = "입금전";
+                if (e.payState == 2) data[i].payState = "배송준비중";
+                if (e.payState == 3) data[i].payState = "배송대기";
+                if (e.payState == 4) data[i].payState = "배송중";
+                if (e.payState == 5) data[i].payState = "배송완료";
+            })
+            return data;
+          }
+        },
+        columns:[
+          //{data:"ids", defaultContent: ""},
+          {data:"id"},
+          {data:"nickname"},
+          {data:"product"},
+          {data:"waybillNumber"},
+          {data:"payState"}
+        ]
+
+      });
+    }
+  });
+</script>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-kjU+l4N0Yf4ZOJErLsIcvOU2qSb74wXpOhqTvwVx3OElZRweTnQ6d31fXEoRD1Jy" crossorigin="anonymous"></script>
+</body>
+</html>

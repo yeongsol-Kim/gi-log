@@ -30,6 +30,12 @@ public class User implements UserDetails {
     @Column(name = "nickname")
     private String nickname;
 
+    @Column(name = "age")
+    private Integer age;
+
+    @Column(name = "gender")
+    private String gender;
+
     @Column(name = "reg_datetime")
     private LocalDateTime regDatetime;
 
