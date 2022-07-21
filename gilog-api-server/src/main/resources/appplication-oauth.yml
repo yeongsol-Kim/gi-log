@@ -18,4 +18,5 @@ spring:
             user_name_attribute: id
 
 #kauth.kakao.com/oauth/authorize?client_id=ee4ee61f1ea69f5a8d5f5924343083f7&redirect_uri=http://localhost:8080/api/oauth2/code/kakao&response_type=code
-#kauth.kakao.com/oauth/authorize?client_id=ee4ee61f1ea69f5a8d5f5924343083f7&redirect_uri=http://ec2-3-39-195-205.ap-northeast-2.compute.amazonaws.com:8080/api/oauth2/code/kakao&response_type=code
+#kauth.kakao.com/oauth/authorize?client_id=ee4ee61f1ea69f5a8d5f5924343083f7&redirect_uri=http://ec2-43-200-108-131.ap-northeast-2.compute.amazonaws.com:8080/api/oauth2/code/kakao&response_type=code
+#kauth.kakao.com/oauth/logout?client_id=ee4ee61f1ea69f5a8d5f5924343083f7&logout_redirect_uri=http://ec2-43-200-108-131.ap-northeast-2.compute.amazonaws.com:8080/api/oauth2/logout/kakao

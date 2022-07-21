@@ -30,6 +30,15 @@ public class GiLogService {
         return giLogRepository.save(giLog).getId();
     }
 
+    // 기록 데이터 업데이트
+    public Long updateGiLog(GiLogDto giLogDto) {
+        GiLog giLog = giLogRepository.findOneByUserIdAndWriteDate(giLogDto.getUserId(), giLogDto.getWriteDate());
+
+        giLog.setQuestion(giLogDto.getQuestion());
+        giLog.setRequest(giLogDto.getRequest());
+        return giLogRepository.save(giLog).getId();
+    }
+
     public GiLogDto getMyGiLogByDate(Long userId, LocalDate date) {
         GiLog giLog = giLogRepository.findOneByUserIdAndWriteDate(userId, date);
 

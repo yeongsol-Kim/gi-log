@@ -3,14 +3,14 @@
 <head>
     <title>배송 관리</title>
 
-    <th:block th:replace="/fragments/head.html :: head"> </th:block>
+    <th:block th:replace="fragments/head.html :: head"> </th:block>
 
     <style>
     </style>
 </head>
 <body>
 <div class="d-flex" style="flex-direction: row">
-    <div th:replace="/fragments/sidebar.html :: sidebar" style="min-height:1080px;"></div>
+    <div th:replace="fragments/sidebar.html :: sidebar" style="min-height:1080px;"></div>
     <div class="contents">
         <h2>배송 관리</h2>
 
@@ -21,7 +21,7 @@
                 </div>
                 <div class="card-info">
                     <div><b>입금전</b></div>
-                    <h2 class="title">0</h2>
+                    <h2 class="title" th:text="${pay1Count}">0</h2>
                 </div>
             </div>
             <div class="card-stretch-item-5 p-4">
@@ -30,7 +30,7 @@
                 </div>
                 <div class="card-info">
                     <div><b>배송준비중</b></div>
-                    <h2 class="title">0</h2>
+                    <h2 class="title" th:text="${delivery1Count}">0</h2>
                 </div>
             </div>
             <div class="card-stretch-item-5 p-4">
@@ -39,7 +39,7 @@
                 </div>
                 <div class="card-info">
                     <div><b>배송대기</b></div>
-                    <h2 class="title">0</h2>
+                    <h2 class="title" th:text="${delivery3Count}">0</h2>
                 </div>
             </div>
             <div class="card-stretch-item-5 p-4">
@@ -48,7 +48,7 @@
                 </div>
                 <div class="card-info">
                     <div><b>배송중</b></div>
-                    <h2 class="title">0</h2>
+                    <h2 class="title" th:text="${delivery4Count}">0</h2>
                 </div>
             </div>
             <div class="card-stretch-item-5 p-4">
@@ -57,7 +57,7 @@
                 </div>
                 <div class="card-info">
                     <div><b>배송완료</b></div>
-                    <h2 class="title">0</h2>
+                    <h2 class="title" th:text="${delivery5Count}">0</h2>
                 </div>
             </div>
         </div>
@@ -81,28 +81,8 @@
                         <input id="after-date" type="date"> ~ <input id="before-date" type="date">
                     </td>
                 </tr>
-                <tr>
-                    <th>상품</th>
-                    <td>
-                        <input type="radio" id="product-none" name="product" checked>
-                        <label for="product-none">전체</label>
-                        <input type="radio" id="product-14" name="product" value="14">
-                        <label for="product-14">14장</label>
-                        <input type="radio" id="product-28" name="product" value="28">
-                        <label for="product-28">28장</label>
-                    </td>
-                </tr>
-                <tr>
-                    <th>입금상태</th>
-                    <td>
-                        <input type="radio" id="pay-none" name="pay" value="0" checked>
-                        <label for="pay-none">전체</label>
-                        <input type="radio" id="pay-before" name="pay" value="1">
-                        <label for="pay-before">입금전</label>
-                        <input type="radio" id="pay-payed" name="pay" value="2">
-                        <label for="pay-payed">입금완료</label>
-                    </td>
-                </tr>
+                <tr th:replace="fragments/filter/filter.html :: product"></tr>
+                <tr th:replace="fragments/filter/filter.html :: pay"></tr>
             </table>
             <div class="text-center mt-4">
                 <button id="search" class="btn btn-primary">검색</button>
@@ -127,7 +107,31 @@
         </div>
         <script>
   $(document).ready( function () {
-    $('#ordertable').DataTable();
+    var lang_kor = {
+      "decimal": "",
+      "emptyTable": "데이터가 없습니다.",
+      "info": "_START_ - _END_ (총 _TOTAL_ 건)",
+      "infoEmpty":  "0건",
+      "infoFiltered": "(전체 _MAX_ 건 중 검색결과)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "_MENU_ 개씩 보기",
+      "loadingRecords": "로딩중...",
+      "processing": "처리중...",
+      "search": "검색 : ",
+      "zeroRecords": "검색된 데이터가 없습니다.",
+      "paginate": {
+        "first": "첫 페이지",
+        "last": "마지막 페이지",
+        "next": "다음",
+        "previous": "이전"
+      },
+      "aria": {
+        "sortAscending": " : 오름차순 정렬",
+        "sortDescending": " : 내림차순 정렬"
+      }
+    };
+    const DELIVERY_STR = ["", "배송준비중", "배송보류", "배송대기", "배송중", "배송완료"];
     searchList();
 
     $('#reset').on('click', function(){
@@ -137,17 +141,48 @@
         $('#after-date').val('');
         $('#pay-none').prop('checked', true);
       searchList();
-    })
+    });
 
     $('#search').on('click', function(){
       searchList();
-    })
+    });
+
+    $(document).on('click', '.btn-delivery', function(){
+      var id = $(this).val();
+      var v = $('#select-delivery-' + id + ' option:selected').val();
+      $.ajax({
+        url: './order/change-delivery-state',
+        type: 'post',
+        data: {
+          id: id,
+          state: v
+        },
+        success : function(){alert('배송상태를 변경하였습니다.');}
+      });
+    });
+
+    $(document).on('click', '.btn-way-bill', function(){
+      var id = $(this).val();
+      var v = $('#way-bill-' + id).val();
+      $.ajax({
+        url: './order/change-way-bill-number',
+        type: 'post',
+        data: {
+          id: id,
+          wayBillNumber: v
+        },
+        success : function(){alert('운송장번호를 저장하였습니다.');}
+      });
+    });
 
     function searchList() {
       $("#ordertable").DataTable({
         destroy:true,
         searching:false,
-        pageLength: 10,
+        lengthChange: false,
+        order: [0, "desc"],
+        language: lang_kor,
+        pageLength : 200,
         ajax:{
           url:"./orders",
           type :"GET",
@@ -159,26 +194,33 @@
             afterDateString: $('#after-date').val(),
             payState: $('input[name="pay"]:checked').val()
           },
-          dataSrc: function(data) {
-            data.forEach((e, i) => {
-                if (e.payState == 1) data[i].payState = "입금전";
-                if (e.payState == 2) data[i].payState = "배송준비중";
-                if (e.payState == 3) data[i].payState = "배송대기";
-                if (e.payState == 4) data[i].payState = "배송중";
-                if (e.payState == 5) data[i].payState = "배송완료";
-            })
-            return data;
-          }
+          dataSrc: ''
         },
         columns:[
           //{data:"ids", defaultContent: ""},
           {data:"id"},
           {data:"nickname"},
           {data:"product"},
-          {data:"waybillNumber"},
-          {data:"payState"}
+          {
+            data:"waybillNumber",
+            render: function(data, type, row, a) {
+              if (!data) data = "";
+              return '<input type="text" id="way-bill-' + row.id + '" value="' + data + '" placeholder="운송장번호 입력" maxlength="15">' +
+                '<button class="btn-way-bill" value="' + row.id + '">저장</button>' ;
+            }
+          },
+          {
+            data:"deliveryState",
+            render: function(data, type, row, a) {
+                var html = '<select id="select-delivery-' + row.id + '">';
+              for (var i = 1; i < DELIVERY_STR.length; i++) {
+                html += (data == i) ? '<option value="' + i + '" selected>' + DELIVERY_STR[i] + '</option>' : '<option value="' + i + '">' + DELIVERY_STR[i] + '</option>';
+              }
+              html +='</select><button class="btn-delivery" value="' + row.id + '">변경</button>' ;
+              return html;
+            }
+          }
         ]
-
       });
     }
   });

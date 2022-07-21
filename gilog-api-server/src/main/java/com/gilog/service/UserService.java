@@ -5,16 +5,25 @@ import com.gilog.entity.User;
 import com.gilog.exception.BadRequestException;
 import com.gilog.jwt.JwtProvider;
 import com.gilog.repository.UserRepositoryInt;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.RSAPublicKeySpec;
+import java.time.LocalDateTime;
+import java.util.Base64;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -42,11 +51,39 @@ public class UserService {
         return jwtProvider.createToken(account.getUsername(), account.getRole());
     }
 
+    public Long getUserGiLogCountByUsername(String username) {
+        User user = userRepositoryInt.findByUsername(username).orElseThrow();
+        Long count = user.getGilogCount();
+        user.setGilogCount(count +1);
+        userRepositoryInt.save(user);
+        return count;
+    }
+
+    public Long setUserGiLogCountByUsername(String username) {
+        return userRepositoryInt.findByUsername(username).orElseThrow().getGilogCount();
+    }
+
     private void checkPassword(String password, String encodedPassword) {
         boolean isSame = passwordEncoder.matches(password, encodedPassword);
         if(!isSame) {
             throw new BadRequestException("아이디 혹은 비밀번호를 확인하세요.");
         }
+    }
+
+    public UserDto getByUsername(String username) {
+        User user = userRepositoryInt.findByUsername(username).orElseThrow();
+
+        UserDto userDto = UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .nickname(user.getNickname())
+                .age(user.getAge())
+                .gender(user.getGender())
+                .regDatetime(user.getRegDatetime())
+                .gilogCount(user.getGilogCount())
+                .build();
+
+        return userDto;
     }
 
     // 액세스 토큰 발급
@@ -133,7 +170,7 @@ public class UserService {
             while ((line = br.readLine()) != null) {
                 result += line;
             }
-            System.out.println("response body : " + result);
+             System.out.println("response body : " + result);
 
             //Gson 라이브러리로 JSON파싱
             JsonParser parser = new JsonParser();
@@ -150,7 +187,7 @@ public class UserService {
             System.out.println("email : " + email);
 
 
-            User isUser = userRepositoryInt.findByUsername(email).orElse(null);
+            User isUser = userRepositoryInt.findByUsername(Integer.toString(id)).orElse(null);
 
             // 카카오 정보로 회원가입
             if (isUser == null) {
@@ -160,8 +197,13 @@ public class UserService {
 
 
                 User user = User.builder()
-                        .username(email)
+                        .username(Integer.toString(id))
                         .password(Integer.toString(id))
+                        .nickname("이름")
+                        .age(0)
+                        .gender("남자")
+                        .regDatetime(LocalDateTime.now())
+                        .gilogCount(1L)
                         .role("[ROLE_USER]")
                         .build();
                 userRepositoryInt.save(user);
@@ -178,7 +220,7 @@ public class UserService {
 
 
             br.close();
-            return jwtProvider.createToken(email, "USER");
+            return jwtProvider.createToken(Integer.toString(id), "USER");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -186,6 +228,108 @@ public class UserService {
         return "Asd";
     }
 
+    public String userIdFromApple(String idToken) {
+        StringBuffer result = new StringBuffer();
+        try {
+            URL url = new URL("https://appleid.apple.com/auth/keys");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            String line = "";
+
+            while ((line = br.readLine()) != null) {
+                result.append(line);
+            }
+        } catch (IOException e) {
+            System.out.println("error");
+        }
+
+        JsonParser parser = new JsonParser();
+        JsonObject keys = (JsonObject) parser.parse(result.toString());
+        JsonArray keyArray = (JsonArray) keys.get("keys");
+
+
+        //클라이언트로부터 가져온 identity token String decode
+        String[] decodeArray = idToken.split("\\.");
+        String header = new String(Base64.getDecoder().decode(decodeArray[0]));
+
+        //apple에서 제공해주는 kid값과 일치하는지 알기 위해
+        JsonElement kid = ((JsonObject) parser.parse(header)).get("kid");
+        JsonElement alg = ((JsonObject) parser.parse(header)).get("alg");
+
+        //써야하는 Element (kid, alg 일치하는 element)
+        JsonObject avaliableObject = null;
+        for (int i = 0; i < keyArray.size(); i++) {
+            JsonObject appleObject = (JsonObject) keyArray.get(i);
+            JsonElement appleKid = appleObject.get("kid");
+            JsonElement appleAlg = appleObject.get("alg");
+
+            if (Objects.equals(appleKid, kid) && Objects.equals(appleAlg, alg)) {
+                avaliableObject = appleObject;
+                break;
+            }
+        }
+
+        //일치하는 공개키 없음
+        if (ObjectUtils.isEmpty(avaliableObject))
+            throw new IllegalArgumentException("맞는 키를 찾을 수 없음");
+
+        PublicKey publicKey = this.getPublicKey(avaliableObject);
+        //--> 여기까지 검증
+
+        Claims userInfo = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(idToken).getBody();
+        JsonObject userInfoObject = (JsonObject) parser.parse(new Gson().toJson(userInfo));
+        JsonElement appleAlg = userInfoObject.get("sub");
+        String userId = appleAlg.getAsString();
+
+
+        User isUser = userRepositoryInt.findByUsername(userId).orElse(null);
+
+        // 카카오 정보로 회원가입
+        if (isUser == null) {
+            // 패스워드 인코딩
+            // String encodedPassword = passwordEncoder.encode(password);
+            // ROLE = 사용자
+
+
+            User user = User.builder()
+                    .username(userId)
+                    .password(userId)
+                    .nickname("이름")
+                    .age(0)
+                    .gender("남자")
+                    .regDatetime(LocalDateTime.now())
+                    .gilogCount(1L)
+                    .role("[ROLE_USER]")
+                    .build();
+            userRepositoryInt.save(user);
+
+        }
+
+
+        return jwtProvider.createToken(userId, "USER");
+    }
+
+    public PublicKey getPublicKey(JsonObject object) {
+        String nStr = object.get("n").toString();
+        String eStr = object.get("e").toString();
+
+        byte[] nBytes = Base64.getUrlDecoder().decode(nStr.substring(1, nStr.length() - 1));
+        byte[] eBytes = Base64.getUrlDecoder().decode(eStr.substring(1, eStr.length() - 1));
+
+        BigInteger n = new BigInteger(1, nBytes);
+        BigInteger e = new BigInteger(1, eBytes);
+
+        try {
+            RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(n, e);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
+            return publicKey;
+        } catch (Exception exception) {
+            throw new IllegalArgumentException("키값  없음");
+        }
+    }
 
     public Long getIdByUsername(String username) {
         return userRepositoryInt.findByUsername(username).orElse(null).getId();
@@ -201,6 +345,7 @@ public class UserService {
                 .regDatetime(user.getRegDatetime())
                 .nickname(user.getNickname())
                 .username(user.getUsername())
+                .gilogCount(1L)
                 .build();
     }
 
@@ -215,6 +360,11 @@ public class UserService {
         }
 
         return userRepositoryInt.save(user).getId();
+    }
+
+    public void deleteUser(String username) {
+        User user = userRepositoryInt.findByUsername(username).orElseThrow();
+        userRepositoryInt.delete(user);
     }
 
 }

@@ -24,11 +24,13 @@
     flex-basis: 33%;
     display:flex;
     flex-direction: row;
+    align-items: center;
 }
 .card-stretch-item-5 {
     flex-basis: 20%;
     display:flex;
     flex-direction: row;
+    align-items: center;
 }
 .cards {
     display:flex;
@@ -117,4 +119,7 @@ padding: 0.5rem;
 }
 .card-info {
     padding-left: 0.4rem;
+}
+.option label {
+    margin-right: 1.5rem;
 }

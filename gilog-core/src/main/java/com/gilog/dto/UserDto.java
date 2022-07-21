@@ -24,4 +24,6 @@ public class UserDto {
     private Integer age;
 
     private LocalDateTime regDatetime;
+
+    private Long gilogCount;
 }

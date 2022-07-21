@@ -2,10 +2,13 @@ package com.gilog.controller;
 
 import com.gilog.dto.UserDto;
 import com.gilog.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class UserController {
@@ -38,8 +41,30 @@ public class UserController {
         model.addAttribute("key", key);
         return "callbackPage";
 
-
         //return accessToken;
+    }
+
+    @ResponseBody
+    @GetMapping("/api/oauth2/logout/kakao")
+    public String logoutKakao(){
+
+        return "로그아웃되었씁니다";
+    }
+
+//    // 애플 로그인 호출
+//    @RequestMapping(value = "/api/login/apple")
+//    public @ResponseBody String getAppleAuthUrl(HttpServletRequest request) throws Exception {
+//
+//        String reqUrl = appleAuthUrl + "/auth/authorize?client_id=" + client_id + "&redirect_uri=" + redirect_uri
+//                + "&response_type=code id_token&response_mode=form_post";
+//
+//        return reqUrl;
+//    }
+
+    @ResponseBody
+    @PostMapping("/api/oauth2/code/apple")
+    public String appleLogin(@RequestHeader("social-token") String socialToken) {
+        return userService.userIdFromApple(socialToken);
     }
 
     // 유저 정보 등록/수정
@@ -51,9 +76,10 @@ public class UserController {
         return userService.setUserInfo(userDto);
     }
 
-    @GetMapping("/kakao2")
-    public String kakaoCallback2(@RequestParam String code){
-        System.out.println(code);
-        return code;
+    // 회원탈퇴
+    @ResponseBody
+    @PostMapping("/api/user/delete")
+    public void setUserInfo(Authentication authentication){
+        userService.deleteUser(authentication.getName());
     }
 }

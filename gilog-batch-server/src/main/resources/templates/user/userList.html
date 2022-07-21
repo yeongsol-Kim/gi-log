@@ -1,22 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
     <title>고객관리</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-    <link href="css/gilog-css.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
-
-    <script src="https://kit.fontawesome.com/7587aaf826.js" crossorigin="anonymous"></script>
+    <th:block th:replace="fragments/head.html :: head"> </th:block>
     <style>
   </style>
 </head>
 <body>
 <div class="d-flex" style="flex-direction: row">
-    <div th:replace="/fragments/sidebar.html :: sidebar"></div>
+    <div th:replace="fragments/sidebar.html :: sidebar"></div>
     <div class="contents">
         <h2>고객관리</h2>
         <div class="section box">
@@ -56,7 +48,30 @@
     </div>
     <script>
   $(document).ready( function () {
-    $('#usertable').DataTable();
+    var lang_kor = {
+      "decimal": "",
+      "emptyTable": "데이터가 없습니다.",
+      "info": "_START_ - _END_ (총 _TOTAL_ 명)",
+      "infoEmpty":  "0명",
+      "infoFiltered": "(전체 _MAX_ 명 중 검색결과)",
+      "infoPostFix": "",
+      "thousands": ",",
+      "lengthMenu": "_MENU_ 개씩 보기",
+      "loadingRecords": "로딩중...",
+      "processing": "처리중...",
+      "search": "검색 : ",
+      "zeroRecords": "검색된 데이터가 없습니다.",
+      "paginate": {
+        "first": "첫 페이지",
+        "last": "마지막 페이지",
+        "next": "다음",
+        "previous": "이전"
+      },
+      "aria": {
+        "sortAscending": " : 오름차순 정렬",
+        "sortDescending": " : 내림차순 정렬"
+      }
+    };
     searchUserList();
 
     $('#reset').on('click', function(){
@@ -72,8 +87,10 @@
       $("#usertable").DataTable({
         destroy:true,
         searching:false,
-        bLengthChange: false,
-        pageLength: 20,
+        lengthChange: false,
+        order: [4, "desc"],
+        language: lang_kor,
+        pageLength : 200,
         ajax:{
           url:"./users",
           type :"GET",
@@ -89,7 +106,12 @@
           {data:"nickname"},
           {data:"age"},
           {data:"gender"},
-          {data:"regDatetime"}
+          {
+            data:"regDatetime",
+            render: function(data) {
+              return data.substr(0,10);
+            }
+           }
         ]
 
       });

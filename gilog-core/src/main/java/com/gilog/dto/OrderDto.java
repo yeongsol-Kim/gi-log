@@ -29,7 +29,12 @@ public class OrderDto {
 
     private Integer payState;
 
+    private Integer deliveryState;
+
     private String address;
 
     private Integer price;
+
+    private Integer refundState;
+
 }

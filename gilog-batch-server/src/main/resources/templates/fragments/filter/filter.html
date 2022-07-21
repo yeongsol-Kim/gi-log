@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>주문목록</title>
+
+    <th:block th:replace="/fragments/head.html :: head"> </th:block>
+
+    <style>
+    </style>
+</head>
+<body>
+    <table class="option">
+        <tr>
+            <th>검색어</th>
+            <td>
+                <select id="search-type">
+                    <option value="id">주문번호</option>
+                    <option value="nickname">고객명</option>
+                    <option value="">id</option>
+                </select>
+                <input type="text" id="search-value" maxlength="20">
+            </td>
+        </tr>
+        <tr>
+            <th>기간</th>
+            <td>
+                <input id="after-date" type="date"> ~ <input id="before-date" type="date">
+            </td>
+        </tr>
+        <tr th:fragment="product">
+            <th>상품</th>
+            <td>
+                <input type="radio" id="product-none" name="product" checked>
+                <label for="product-none">전체</label>
+                <input type="radio" id="product-14-p" name="product" value="14장(사진만)">
+                <label for="product-14-p">14장(사진만)</label>
+                <input type="radio" id="product-28-p" name="product" value="14장(사진+글)">
+                <label for="product-28-p">14장(사진+글)</label>
+                <input type="radio" id="product-14" name="product" value="28장(사진만)">
+                <label for="product-14">28장(사진만)</label>
+                <input type="radio" id="product-28" name="product" value="28장(사진+글)">
+                <label for="product-28">28장(사진+글)</label>
+            </td>
+        </tr>
+        <tr th:fragment="pay">
+            <th>입금/결제상태</th>
+            <td>
+                <input type="radio" id="pay-none" name="pay" value="0" checked>
+                <label for="pay-none">전체</label>
+                <input type="radio" id="pay-1" name="pay" value="1">
+                <label for="pay-1">입금전</label>
+                <input type="radio" id="pay-2" name="pay" value="2">
+                <label for="pay-2">추가입금대기</label>
+                <input type="radio" id="pay-3" name="pay" value="3">
+                <label for="pay-3">입금완료</label>
+                <input type="radio" id="pay-4" name="pay" value="4">
+                <label for="pay-4">결제완료</label>
+            </td>
+        </tr>
+    </table>
+    <div class="text-center mt-4">
+        <button id="search" class="btn btn-primary">검색</button>
+        <button id="reset" class="btn btn-secondary">초기화</button>
+    </div>
+</body>
+</html>

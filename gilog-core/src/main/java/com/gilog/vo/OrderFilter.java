@@ -21,4 +21,6 @@ public class OrderFilter {
     private LocalDate beforeDate;
 
     private LocalDate afterDate;
+
+    private Integer refundState;
 }

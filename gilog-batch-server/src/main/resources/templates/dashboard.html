@@ -3,10 +3,15 @@
 <head>
     <title>Gi-log :: 대시보드</title>
 
-    <th:block th:replace="/fragments/head.html :: head"> </th:block>
+    <th:block th:replace="fragments/head.html :: head"> </th:block>
 
     <style>
-
+        .color-blue {
+            color: blue;
+        }
+        .color-red {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -24,8 +29,8 @@
                             <i class="fa-solid fa-cart-shopping fa-3x icon-item"></i>
                         </div>
                         <div class="card-info">
-                            <div><b>주문</b><p class="subtitle">(0건)</p></div>
-                            <h2 class="title">0</h2>원
+                            <div><b>주문</b><p class="subtitle" th:text="'(' + ${todayOrderCount}  + '건)'"></p></div>
+                            <h2 class="title" th:text="${todayOrderPrice}"></h2>원
                         </div>
                     </div>
                     <div class="card-stretch-item-3 p-4">
@@ -56,26 +61,26 @@
                 <div class="cards">
                     <div class="card-4 d-table text-center">
                         <div class="ver-center">
-                            <h1>0</h1>
-                            <p>입금전</p>
+                            <h1 th:text="${monthPay1Count}">0</h1>
+                            <p class="color-blue">입금전</p>
                         </div>
                     </div>
                     <div class="card-4 d-table text-center">
                         <div class="ver-center">
-                            <h1>0</h1>
-                            <p>배송준비중</p>
+                            <h1 th:text="${monthDelivery1Count}">0</h1>
+                            <p class="color-blue">배송준비중</p>
                         </div>
                     </div>
                     <div class="card-4 d-table text-center">
                         <div class="ver-center">
-                            <h1>0</h1>
-                            <p>배송대기</p>
+                            <h1 th:text="${monthDelivery3Count}">0</h1>
+                            <p class="color-blue">배송대기</p>
                         </div>
                     </div>
                     <div class="card-4 d-table text-center">
                         <div class="ver-center">
-                            <h1>0</h1>
-                            <p>배송중</p>
+                            <h1 th:text="${monthDelivery4Count}">0</h1>
+                            <p class="color-blue">배송중</p>
                         </div>
                     </div>
                 </div>
@@ -89,25 +94,25 @@
                     <div class="card-4 d-table text-center">
                         <div class="ver-center">
                             <h1>0</h1>
-                            <p>취소</p>
+                            <p class="color-red">취소</p>
                         </div>
                     </div>
                     <div class="card-4 d-table text-center">
                         <div class="ver-center">
                             <h1>0</h1>
-                            <p>교환</p>
+                            <p class="color-red">교환</p>
                         </div>
                     </div>
                     <div class="card-4 d-table text-center">
                         <div class="ver-center">
                             <h1>0</h1>
-                            <p>반품</p>
+                            <p class="color-red">반품</p>
                         </div>
                     </div>
                     <div class="card-4 d-table text-center">
                         <div class="ver-center">
                             <h1>0</h1>
-                            <p>환불</p>
+                            <p class="color-red">환불</p>
                         </div>
                     </div>
                 </div>

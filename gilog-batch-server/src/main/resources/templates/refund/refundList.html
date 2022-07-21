@@ -1,67 +1,66 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>주문목록</title>
+    <title>취소/교환/반품/환불</title>
 
-  <th:block th:replace="fragments/head.html :: head"> </th:block>
+    <th:block th:replace="fragments/head.html :: head"> </th:block>
 
-  <style>
-  </style>
+    <style>
+    </style>
 </head>
 <body>
 <div class="d-flex" style="flex-direction: row">
-  <div th:replace="fragments/sidebar.html :: sidebar"></div>
-  <div class="contents">
-    <h2>전체주문목록</h2>
-    <div class="section box">
-      <table class="option">
-        <tr>
-          <th>검색어</th>
-          <td>
-            <select id="search-type">
-              <option value="id">주문번호</option>
-              <option value="nickname">고객명</option>
-              <option value="">id</option>
-            </select>
-            <input type="text" id="search-value" maxlength="20">
-          </td>
-        </tr>
-        <tr>
-          <th>기간</th>
-          <td>
-            <input id="after-date" type="date"> ~ <input id="before-date" type="date">
-          </td>
-        </tr>
-        <tr th:replace="fragments/filter/filter.html :: product"></tr>
-        <tr th:replace="fragments/filter/filter.html :: pay"></tr>
-      </table>
-      <div class="text-center mt-4">
-        <button id="search" class="btn btn-primary">검색</button>
-        <button id="reset" class="btn btn-secondary">초기화</button>
-      </div>
-    </div>
+    <div th:replace="fragments/sidebar.html :: sidebar"></div>
+    <div class="contents">
+        <h2>취소/교환/반품/환불</h2>
+        <div class="section box">
+            <table class="option">
+                <tr>
+                    <th>검색어</th>
+                    <td>
+                        <select id="search-type">
+                            <option value="id">주문번호</option>
+                            <option value="nickname">고객명</option>
+                            <option value="">id</option>
+                        </select>
+                        <input type="text" id="search-value" maxlength="20">
+                    </td>
+                </tr>
+                <tr>
+                    <th>기간</th>
+                    <td>
+                        <input id="after-date" type="date"> ~ <input id="before-date" type="date">
+                    </td>
+                </tr>
+                <tr th:replace="fragments/filter/filter.html :: product"></tr>
+                <tr th:replace="fragments/filter/filter.html :: pay"></tr>
+            </table>
+            <div class="text-center mt-4">
+                <button id="search" class="btn btn-primary">검색</button>
+                <button id="reset" class="btn btn-secondary">초기화</button>
+            </div>
+        </div>
 
-    <div class="section box">
-      <table id="ordertable">
-        <thead>
-        <tr>
-          <th>주문번호</th>
-          <th>주문회원</th>
-          <th>상품명</th>
-          <th>가격</th>
-          <th>주문일자</th>
-          <th>입금/주문 상태</th>
-          <th>취소</th>
-          <th>파일</th>
-          <th>사진</th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
+        <div class="section box">
+            <table id="ordertable">
+                <thead>
+                <tr>
+                    <th>주문번호</th>
+                    <th>주문회원</th>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>주문일자</th>
+                    <th>입금/주문 상태</th>
+                    <th>파일</th>
+                    <th>사진</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
-  <script>
+    <script>
   $(document).ready( function () {
     var lang_kor = {
       "decimal": "",
@@ -88,9 +87,7 @@
       }
     };
     const PAY_STR = ["", "입금전", "추가입금대기", "입금완료", "결제완료"];
-    const REFUND_STR = ["--", "취소", "교환", "반품", "환불"];
     searchList();
-
 
     $('#reset').on('click', function(){
         $('#search-value').val('');
@@ -119,20 +116,6 @@
       });
     })
 
-    $(document).on('click', '.btn-refund', function(){
-      var id = $(this).val();
-      var v = $('#select-refund-' + id + ' option:selected').val();
-      $.ajax({
-        url: './order/change-refund-state',
-        type: 'post',
-        data: {
-          id: id,
-          state: v
-        },
-        success : function(){alert('상태를 변경하였습니다.');}
-      });
-    })
-
     function searchList() {
       $("#ordertable").DataTable({
         destroy:true,
@@ -150,8 +133,8 @@
             product: $('input[name="product"]:checked').val(),
             beforeDateString: $('#before-date').val(),
             afterDateString: $('#after-date').val(),
-            refundState: 0,
-            payState: $('input[name="pay"]:checked').val()
+            payState: $('input[name="pay"]:checked').val(),
+            refundState: 1
           },
           dataSrc: ''
         },
@@ -170,17 +153,6 @@
                 html += (data == i) ? '<option value="' + i + '" selected>' + PAY_STR[i] + '</option>' : '<option value="' + i + '">' + PAY_STR[i] + '</option>';
               }
               html +='</select><button class="btn-pay" value="' + row.id + '">변경</button>';
-              return html;
-            }
-          },
-          {
-            data:"refundState",
-            render: function(data, type, row, a) {
-              var html = '<select id="select-refund-' + row.id + '">';
-              for (var i = 0; i < REFUND_STR.length; i++) {
-                html += '<option value="' + i + '">' + REFUND_STR[i] + '</option>';
-              }
-              html +='</select><button class="btn-refund" value="' + row.id + '">변경</button>';
               return html;
             }
           },

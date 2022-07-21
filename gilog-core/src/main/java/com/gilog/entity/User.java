@@ -42,6 +42,9 @@ public class User implements UserDetails {
     @Column(name = "role")
     private String role;
 
+    @Column(name = "gilog_count")
+    private Long gilogCount;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

@@ -35,6 +35,7 @@ public class OrderService {
                             .id(order.getId())
                             .orderDate(order.getOrderDate())
                             .price(order.getPrice())
+                            .deliveryState(order.getDeliveryState())
                             .payState(order.getPayState())
                             .build()
             );
@@ -56,6 +57,8 @@ public class OrderService {
                 .orderDate(order.getOrderDate())
                 .userId(order.getUserId())
                 .product(order.getProduct())
+                .payState(order.getPayState())
+                .deliveryState(order.getDeliveryState())
                 .amount(order.getAmount())
                 .dateList(order.getDateList())
                 .address(order.getAddress())
@@ -75,6 +78,8 @@ public class OrderService {
                 .address(orderDto.getAddress())
                 .price(orderDto.getPrice())
                 .payState(1)
+                .deliveryState(1)
+                .refundState(0)
                 .nickname(userRepositoryInt.findById(orderDto.getUserId()).orElse(null).getNickname())
                 .build();
 

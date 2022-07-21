@@ -42,9 +42,15 @@ public class Order {
     @Column(name = "pay_state")
     private Integer payState;
 
+    @Column(name = "delivery_state")
+    private Integer deliveryState;
+
     @Column(name = "address")
     private String address;
 
     @Column(name = "price")
     private Integer price;
+
+    @Column(name = "refund_state")
+    private Integer refundState;
 }

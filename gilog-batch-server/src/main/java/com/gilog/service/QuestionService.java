@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,9 @@ public class QuestionService {
                     QuestionDto.builder()
                             .id(question.getId())
                             .question(question.getQuestion())
+                            .orderNumber(question.getOrderNumber())
+                            .modDatetime(question.getModDatetime())
+                            .regDatetime(question.getRegDatetime())
                             .build()
             );
         }
@@ -33,12 +37,27 @@ public class QuestionService {
     }
 
 
-    public Long addQuestion(QuestionDto questionDto) {
-        return questionRepository.save(
-                Question.builder()
-                        .question(questionDto.getQuestion())
-                        .build()
-        ).getId();
+    // 질문 저장
+    public Long saveQuestion(String que, Long id) {
+
+        Question question = Question.builder().build();
+
+        if (id == null) {
+            question.setRegDatetime(LocalDateTime.now());
+            Question q = questionRepository.findTopByOrderByOrderNumberDesc().orElse(null);
+            if (q == null) {
+                question.setOrderNumber(1L);
+            } else {
+                question.setOrderNumber(q.getOrderNumber() + 1);
+            }
+        } else {
+            question = questionRepository.findById(id).orElseThrow();
+        }
+
+        question.setModDatetime(LocalDateTime.now());
+        question.setQuestion(que);
+
+        return questionRepository.save(question).getId();
 
     }
 }

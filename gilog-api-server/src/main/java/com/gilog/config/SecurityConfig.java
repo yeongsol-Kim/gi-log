@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 X
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/oauth2/code/kakao", "/api/v1/user/login").permitAll()
+                .antMatchers("/api/oauth2/code/kakao", "/api/v1/user/login", "/api/oauth2/code/apple", "/api/oauth2/logout/kakao").permitAll()
                 .antMatchers("/api/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
