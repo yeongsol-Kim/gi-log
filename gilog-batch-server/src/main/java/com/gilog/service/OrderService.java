@@ -68,6 +68,7 @@ public class OrderService {
                     .orderDate(order.getOrderDate())
                     .waybillNumber(order.getWaybillNumber())
                     .payState(order.getPayState())
+                    .refundState(order.getRefundState())
                     .build());
         }
 

@@ -65,7 +65,7 @@ public class GiLogController {
         return giLogService.saveGiLog(giLogDto);
     }
 
-    @PatchMapping("/api/gi-log") // 기록 수정
+    @PostMapping("/api/gi-log/edit") // 기록 수정
     public Long patchWrite(@RequestBody GiLogDto giLogDto, Authentication authentication) {
 
         giLogDto.setUserId(userService.getIdByUsername(authentication.getName()));
