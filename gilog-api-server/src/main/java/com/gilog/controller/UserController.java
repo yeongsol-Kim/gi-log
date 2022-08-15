@@ -48,7 +48,7 @@ public class UserController {
     @GetMapping("/api/oauth2/logout/kakao")
     public String logoutKakao(){
 
-        return "로그아웃되었씁니다";
+        return "로그아웃되었습니다";
     }
 
 //    // 애플 로그인 호출

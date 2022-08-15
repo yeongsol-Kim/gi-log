@@ -8,6 +8,7 @@ import com.gilog.repository.UserRepositoryInt;
 import com.google.gson.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.util.Objects;
 
 @Service
 @Transactional
+@Slf4j
 public class UserService {
 
     private final UserRepositoryInt userRepositoryInt;
@@ -114,7 +116,7 @@ public class UserService {
 
             // 결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
-            System.out.println("responseCode : " + responseCode);
+//            System.out.println("responseCode : " + responseCode);
 
             // 요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -124,7 +126,7 @@ public class UserService {
             while ((line = br.readLine()) != null) {
                 result += line;
             }
-            System.out.println("response body : " + result);
+//            System.out.println("response body : " + result);
 
             // Gson 라이브러리에 포함된 클래스로 JSON파싱 객체 생성
             JsonParser parser = new JsonParser();
@@ -133,8 +135,8 @@ public class UserService {
             access_Token = element.getAsJsonObject().get("access_token").getAsString();
             refresh_Token = element.getAsJsonObject().get("refresh_token").getAsString();
 
-            System.out.println("access_token : " + access_Token);
-            System.out.println("refresh_token : " + refresh_Token);
+//            System.out.println("access_token : " + access_Token);
+//            System.out.println("refresh_token : " + refresh_Token);
 
             br.close();
             bw.close();
@@ -160,7 +162,7 @@ public class UserService {
 
             //결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
-            System.out.println("responseCode : " + responseCode);
+//            System.out.println("responseCode : " + responseCode);
 
             //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -170,24 +172,32 @@ public class UserService {
             while ((line = br.readLine()) != null) {
                 result += line;
             }
-             System.out.println("response body : " + result);
+//             System.out.println("response body : " + result);
 
             //Gson 라이브러리로 JSON파싱
             JsonParser parser = new JsonParser();
             JsonElement element = parser.parse(result);
 
-            int id = element.getAsJsonObject().get("id").getAsInt();
-            boolean hasEmail = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean();
-            String email = "";
-            if(hasEmail){
-                email = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
-            }
+            String id = element.getAsJsonObject().get("id").getAsString();
 
-            System.out.println("id : " + id);
-            System.out.println("email : " + email);
+//            boolean hasEmail = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean();
+//            boolean emailNeedsAgreement = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email_needs_agreement").getAsBoolean();
+//            String uid = "";
+//            if (hasEmail && !emailNeedsAgreement) {
+//                // 이메일이 있고 접근 허용 했다면 이메일을 고유 아이디로 사용
+//                uid = element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString();
+//            } else {
+//                // 카카오 고유 user id로 사용
+//                uid = element.getAsJsonObject().get("id").getAsString();
+//            }
 
 
-            User isUser = userRepositoryInt.findByUsername(Integer.toString(id)).orElse(null);
+
+//            System.out.println("id : " + id);
+//            System.out.println("email : " + email);
+
+
+            User isUser = userRepositoryInt.findByUsername(id).orElse(null);
 
             // 카카오 정보로 회원가입
             if (isUser == null) {
@@ -197,8 +207,8 @@ public class UserService {
 
 
                 User user = User.builder()
-                        .username(Integer.toString(id))
-                        .password(Integer.toString(id))
+                        .username(id)
+                        .password(id)
                         .nickname("이름")
                         .age(0)
                         .gender("남자")
@@ -208,6 +218,7 @@ public class UserService {
                         .build();
                 userRepositoryInt.save(user);
             }
+
 
 //            // 로그인 처리
 //            Authentication kakaoUsernamePassword = new UsernamePasswordAuthenticationToken(username, password);
@@ -220,7 +231,7 @@ public class UserService {
 
 
             br.close();
-            return jwtProvider.createToken(Integer.toString(id), "USER");
+            return jwtProvider.createToken(id, "USER");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -368,3 +379,4 @@ public class UserService {
     }
 
 }
+
