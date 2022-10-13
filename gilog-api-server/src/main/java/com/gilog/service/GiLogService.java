@@ -77,10 +77,10 @@ public class GiLogService {
     private List<GiLogDto> gilogListToDto(List<GiLog> giLogList) {
         List<GiLogDto> giLogDtoList = new ArrayList<>();
         giLogList.stream().forEach(g ->
-                GiLogDto.builder()
+                giLogDtoList.add(GiLogDto.builder()
                         .question(g.getQuestion())
                         .request(g.getRequest())
-                        .build()
+                        .build())
         );
         return giLogDtoList;
     }
