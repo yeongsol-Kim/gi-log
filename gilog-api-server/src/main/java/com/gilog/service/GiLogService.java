@@ -80,6 +80,8 @@ public class GiLogService {
                 giLogDtoList.add(GiLogDto.builder()
                         .question(g.getQuestion())
                         .request(g.getRequest())
+                        .writeDate(g.getWriteDate())
+                        .image(g.getImage())
                         .build())
         );
         return giLogDtoList;

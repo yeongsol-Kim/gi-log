@@ -23,4 +23,6 @@ public class GiLogDto {
 
     private Long userId;
 
+    private String image;
+
 }
