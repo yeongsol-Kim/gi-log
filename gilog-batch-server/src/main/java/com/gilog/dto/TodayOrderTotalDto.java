@@ -5,11 +5,11 @@ import lombok.Data;
 
 @Data
 public class TodayOrderTotalDto {
-    private Long count;
+    private int count;
     private Long price;
 
     public TodayOrderTotalDto() {
-        this.count = 0L;
+        this.count = 0;
         this.price = 0L;
     }
 }

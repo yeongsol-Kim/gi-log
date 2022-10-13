@@ -10,3 +10,7 @@ spring:
     username: [USERNAME]
     password: [PASSWORD]
     driver-class-name: com.mysql.cj.jdbc.Driver
+  security:
+    user:
+      name: ssoyeong
+      password: gilog2022!

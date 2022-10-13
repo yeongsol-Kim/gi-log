@@ -56,13 +56,13 @@ public class OrderService {
         List<OrderDto> ordersDto = new ArrayList<>();
 
 
-
         for(Order order : orders) {
             ordersDto.add(OrderDto.builder()
                     .id(order.getId())
                     .userId(order.getUserId())
                     .nickname(order.getNickname())
                     .product(order.getProduct())
+                    .address(order.getAddress())
                     .price(order.getPrice())
                     .deliveryState(order.getDeliveryState())
                     .orderDate(order.getOrderDate())

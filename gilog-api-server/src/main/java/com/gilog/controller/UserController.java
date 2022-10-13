@@ -22,7 +22,6 @@ public class UserController {
     @ResponseBody
     @GetMapping("/api/userinfo")
     public UserDto getLoginUserData(Authentication authentication) {
-        System.out.println(authentication.getName());
         return userService.getMyInfo(authentication.getName());
     }
     
@@ -34,8 +33,6 @@ public class UserController {
 
     @GetMapping("/api/oauth2/code/kakao")
     public String kakaoCallback(@RequestParam String code, Model model){
-        System.out.println(code);
-
         String accessToken = userService.getAccessToken(code);
         String key = userService.createKakaoUser(accessToken);
         model.addAttribute("key", key);

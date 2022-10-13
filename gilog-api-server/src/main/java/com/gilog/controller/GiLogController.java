@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,11 +29,8 @@ public class GiLogController {
 
     @PostMapping("/api/gi-log/image") // 이미지 업로드
     public String imageTest(MultipartFile image, Long id) {
-        System.out.println(image.getName());
-        System.out.println(id);
 
         String dasePath = filePath; //자신의 로컬 저장소
-        System.out.println(dasePath);
         String ext = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf("."));; // 파일 확장자
         String saveFileName = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")); // 저장할 파일 이름 (현재 시간)
         String downloadPath = dasePath + saveFileName + ext;
@@ -48,17 +46,20 @@ public class GiLogController {
         return image.getOriginalFilename();
     }
 
+    @GetMapping("/api/gi-log/all") // 기록 목록 조회
+    public List<GiLogDto> getMyWriteList(Authentication authentication) {
+        return giLogService.getMyGiLogList(userService.getIdByUsername(authentication.getName()));
+    }
+
     @GetMapping("/api/gi-log") // 기록 조회
     public GiLogDto getMyWrite(@RequestBody GiLogDto giLogDto,Authentication authentication) {
-        System.out.println(giLogDto.getWriteDate());
-
         return giLogService.getMyGiLogByDate(userService.getIdByUsername(authentication.getName()), giLogDto.getWriteDate());
     }
 
     @PostMapping("/api/gi-log") // 기록 저장
     public Long saveWrite(@RequestBody GiLogDto giLogDto, Authentication authentication) {
-        // 기록 이미지 저장
 
+        // 기록 이미지 저장
         giLogDto.setUserId(userService.getIdByUsername(authentication.getName()));
 
         // 기록 데이터 저장

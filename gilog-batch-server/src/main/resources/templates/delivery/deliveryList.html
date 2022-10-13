@@ -97,6 +97,7 @@
                     <th>주문번호</th>
                     <th>주문회원</th>
                     <th>상품명</th>
+                    <th>주소</th>
                     <th>운송장번호</th>
                     <th>주문상태</th>
                 </tr>
@@ -150,6 +151,7 @@
     $(document).on('click', '.btn-delivery', function(){
       var id = $(this).val();
       var v = $('#select-delivery-' + id + ' option:selected').val();
+
       $.ajax({
         url: './order/change-delivery-state',
         type: 'post',
@@ -201,6 +203,7 @@
           {data:"id"},
           {data:"nickname"},
           {data:"product"},
+          {data:"address"},
           {
             data:"waybillNumber",
             render: function(data, type, row, a) {

@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -39,6 +41,18 @@ public class GiLogService {
         return giLogRepository.save(giLog).getId();
     }
 
+    // 기록 목록 가져오기 (로그인 유저)
+    public List<GiLogDto> getMyGiLogList(Long userId) {
+        List<GiLog> giLogList = giLogRepository.findByUserId(userId);
+
+        // 리스트 DTO 변환
+        List<GiLogDto> giLogDtoList = gilogListToDto(giLogList);
+
+        return giLogDtoList;
+    }
+
+
+    // 기록 날짜로 가져오기 (로그인 유저만 가능)
     public GiLogDto getMyGiLogByDate(Long userId, LocalDate date) {
         GiLog giLog = giLogRepository.findOneByUserIdAndWriteDate(userId, date);
 
@@ -48,12 +62,27 @@ public class GiLogService {
                 .build();
     }
 
+    // 이미지 저장
     public void setGiLogImagePath(Long id, String saveImageName) {
         GiLog gilog = giLogRepository.findById(id).orElse(null);
         if (gilog != null) {
             gilog.setImage(saveImageName);
             giLogRepository.save(gilog);
         }
+    }
+
+
+
+    // List<Gilog> -> List<Dto>
+    private List<GiLogDto> gilogListToDto(List<GiLog> giLogList) {
+        List<GiLogDto> giLogDtoList = new ArrayList<>();
+        giLogList.stream().forEach(g ->
+                GiLogDto.builder()
+                        .question(g.getQuestion())
+                        .request(g.getRequest())
+                        .build()
+        );
+        return giLogDtoList;
     }
 
 }

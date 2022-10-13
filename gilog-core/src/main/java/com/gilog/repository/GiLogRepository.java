@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface GiLogRepository extends JpaRepository<GiLog, Long> {
     GiLog findOneByUserIdAndWriteDate(Long userid, LocalDate date);
+    List<GiLog> findByUserId(Long userid);
 
     @Query("SELECT g FROM GiLog g WHERE g.userId = (:userId) AND g.writeDate IN (:dateList)")
     List<GiLog> findByUserIdAndWriteDateIn(@Param("userId") Long userId, @Param("dateList") List<LocalDate> dateList);

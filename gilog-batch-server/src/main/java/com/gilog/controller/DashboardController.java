@@ -37,8 +37,8 @@ public class DashboardController {
 
         TodayOrderTotalDto todayTotal = new TodayOrderTotalDto();
         for (OrderDto order : todayOrders) {
-            todayTotal.setCount(todayTotal().getCount() + 1);
-            todayTotal.setPrice(todayTotal().getPrice() + order.getPrice());
+            todayTotal.setCount(todayTotal.getCount() + 1);
+            todayTotal.setPrice(todayTotal.getPrice() + order.getPrice());
         }
 
         return todayTotal;

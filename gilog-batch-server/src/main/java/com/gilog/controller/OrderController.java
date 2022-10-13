@@ -1,19 +1,17 @@
 package com.gilog.controller;
 
-import com.gilog.dto.GiLogDto;
 import com.gilog.dto.OrderDto;
 import com.gilog.entity.GiLog;
 import com.gilog.service.OrderService;
-import com.gilog.service.UserService;
 import com.gilog.vo.OrderFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +26,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class OrderController {
