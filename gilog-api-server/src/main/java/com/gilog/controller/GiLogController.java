@@ -4,7 +4,13 @@ import com.gilog.dto.GiLogDto;
 import com.gilog.service.GiLogService;
 import com.gilog.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -64,6 +75,23 @@ public class GiLogController {
 
         // 기록 데이터 저장
         return giLogService.saveGiLog(giLogDto);
+    }
+
+
+    @GetMapping("/api/gi-log/image/{imageName}") // 기록 이미지 불러오기
+    public ResponseEntity<Resource> getMyWriteImage(@PathVariable String imageName) throws MalformedURLException {
+        UrlResource resource = new UrlResource("file:" + filePath + imageName);
+        HttpHeaders header = new HttpHeaders();
+        Path filePath = null;
+        try {
+            filePath = Paths.get(filePath + imageName);
+            // 인풋으로 들어온 파일명 .png / .jpg 에 맞게 헤더 타입 설정
+            header.add("Content-Type", Files.probeContentType(filePath));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return new ResponseEntity<Resource>(resource, header, HttpStatus.OK);
     }
 
     @PostMapping("/api/gi-log/edit") // 기록 수정

@@ -8,6 +8,7 @@ import com.gilog.repository.UserRepositoryInt;
 import com.google.gson.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,7 @@ import java.util.Objects;
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepositoryInt userRepositoryInt;
@@ -37,13 +39,6 @@ public class UserService {
 
     @Value("${kakao.redirect-url}")
     private String kakaoRedirectUrl;
-
-
-    public UserService(UserRepositoryInt userRepositoryInt, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
-        this.userRepositoryInt = userRepositoryInt;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtProvider = jwtProvider;
-    }
 
 
     public String login(String email, String password) {
@@ -201,22 +196,7 @@ public class UserService {
 
             // 카카오 정보로 회원가입
             if (isUser == null) {
-                // 패스워드 인코딩
-                // String encodedPassword = passwordEncoder.encode(password);
-                // ROLE = 사용자
-
-
-                User user = User.builder()
-                        .username(id)
-                        .password(id)
-                        .nickname("이름")
-                        .age(0)
-                        .gender("남자")
-                        .regDatetime(LocalDateTime.now())
-                        .gilogCount(1L)
-                        .role("[ROLE_USER]")
-                        .build();
-                userRepositoryInt.save(user);
+                registerNewUser(id);
             }
 
 
@@ -297,27 +277,13 @@ public class UserService {
 
         User isUser = userRepositoryInt.findByUsername(userId).orElse(null);
 
-        // 카카오 정보로 회원가입
+        // 애플 정보로 회원가입
         if (isUser == null) {
             // 패스워드 인코딩
             // String encodedPassword = passwordEncoder.encode(password);
             // ROLE = 사용자
-
-
-            User user = User.builder()
-                    .username(userId)
-                    .password(userId)
-                    .nickname("이름")
-                    .age(0)
-                    .gender("남자")
-                    .regDatetime(LocalDateTime.now())
-                    .gilogCount(1L)
-                    .role("[ROLE_USER]")
-                    .build();
-            userRepositoryInt.save(user);
-
+            registerNewUser(userId);
         }
-
 
         return jwtProvider.createToken(userId, "USER");
     }
@@ -371,6 +337,23 @@ public class UserService {
         }
 
         return userRepositoryInt.save(user).getId();
+    }
+
+    private void registerNewUser(String id) {
+        // 패스워드 인코딩
+        // String encodedPassword = passwordEncoder.encode(password);
+        // ROLE = 사용자
+        User user = User.builder()
+                .username(id)
+                .password(id)
+                .nickname(null)
+                .age(0)
+                .gender("비공개")
+                .regDatetime(LocalDateTime.now())
+                .gilogCount(1L)
+                .role("[ROLE_USER]")
+                .build();
+        userRepositoryInt.save(user);
     }
 
     public void deleteUser(String username) {
